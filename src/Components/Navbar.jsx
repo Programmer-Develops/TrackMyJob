@@ -23,7 +23,7 @@ export default function Navbar() {
           className="font-semibold text-lg tracking-tight cursor-pointer"
           onClick={() => navigate("/")}
         >
-          JobTrackr
+          TrackMyJob
         </span>
         <div className="hidden sm:flex gap-1">
           {links.map((l) => (
