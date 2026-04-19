@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { JobProvider } from "./Context/JobContext";
-import { useJobs } from "./Context/useJobs";
+import { JobProvider, useJobs } from "./Context/JobContext";
 import Navbar from "./Components/Navbar";
 import Dashboard from "./Pages/Dashboard";
 import Jobs from "./Pages/Jobs";
