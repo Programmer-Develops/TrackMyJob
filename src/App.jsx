@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { JobProvider, useJobs } from "./Context/JobContext";
+import { useEffect } from "react";
 import Navbar from "./Components/Navbar";
 import Dashboard from "./Pages/Dashboard";
 import Jobs from "./Pages/Jobs";
@@ -10,8 +11,16 @@ import NotFound from "./Pages/NotFound";
 function AppLayout() {
   const { darkMode } = useJobs();
 
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
+
   return (
-    <div className={`${darkMode ? "dark" : ""} min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors`}>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors">
       <Navbar />
       <main className="max-w-5xl mx-auto px-4 py-8">
         <Routes>

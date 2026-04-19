@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const GEMINI_API =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent";
 
 export default function AIAnalyzer() {
   const [jd, setJd] = useState("");
@@ -10,12 +9,31 @@ export default function AIAnalyzer() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [cooldown, setCooldown] = useState(0);
+  const cooldownTimerRef = useRef(null);
 
-  const analyze = async () => {
-    if (!jd.trim()) return;
-    setLoading(true);
-    setResult(null);
-    setError("");
+  const startCooldown = (seconds) => {
+    setCooldown(seconds);
+    if (cooldownTimerRef.current) clearInterval(cooldownTimerRef.current);
+    cooldownTimerRef.current = setInterval(() => {
+      setCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(cooldownTimerRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const analyzeWithRetry = async (retryCount = 0, maxRetries = 2) => {
+    const API_KEY = "AIzaSyDQpHjBmIXexphVuQIlX-gCIiODUVMdB14";
+    
+    if (!API_KEY || API_KEY === "undefined") {
+      setError("🔑 API key not configured. Please add VITE_GEMINI_API_KEY to your .env file and restart the dev server.");
+      setLoading(false);
+      return;
+    }
 
     const prompt = `You are a career coach. Analyze this job description and candidate background.
 Return ONLY a valid JSON object, no markdown, no explanation, no backticks:
@@ -43,22 +61,68 @@ ${resume || "Not provided — give general advice."}`;
         }),
       });
 
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        
+        if (res.status === 429) {
+          // Rate limited - retry with exponential backoff
+          if (retryCount < maxRetries) {
+            const waitTime = Math.pow(2, retryCount + 1); // 2, 4 seconds
+            setError(`⏱️ Rate limited. Retrying in ${waitTime} seconds (${retryCount + 1}/${maxRetries})...`);
+            startCooldown(waitTime);
+            
+            setTimeout(() => {
+              analyzeWithRetry(retryCount + 1, maxRetries);
+            }, waitTime * 1000);
+          } else {
+            setError("⏱️ Rate limited by Google API. Free tier has strict limits (60 requests/minute). Please wait 1-2 minutes and try again.");
+            startCooldown(30);
+            setLoading(false);
+          }
+          return;
+        } else if (res.status === 401 || res.status === 403) {
+          setError("🔑 Invalid or expired API key.");
+          setLoading(false);
+        } else {
+          setError(`❌ API Error ${res.status}: ${errorData.error?.message || "Unknown error"}`);
+          setLoading(false);
+        }
+        return;
+      }
+
       const data = await res.json();
       const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
       const clean = raw.replace(/```json|```/g, "").trim();
       const parsed = JSON.parse(clean);
       setResult(parsed);
+      setError("");
+      setLoading(false);
     } catch (e) {
-      console.log(e);
-      setError("Something went wrong. Check your API key in .env");
+      console.error("Detailed error:", e);
+      if (e instanceof SyntaxError) {
+        setError("❌ Invalid response format. API returned unexpected data.");
+      } else {
+        setError(`❌ ${e.message || "Something went wrong"}`);
+      }
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  const analyze = async () => {
+    if (!jd.trim()) return;
+    if (cooldown > 0) return;
+
+    setLoading(true);
+    setResult(null);
+    setError("");
+    
+    analyzeWithRetry();
   };
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-1">AI job analyzer</h1>
-      <p className="text-gray-500 text-sm mb-6">
+      <h1 className="text-2xl font-semibold mb-1 text-gray-900 dark:text-white">AI job analyzer</h1>
+      <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
         Paste a job description to get a fit score and suggestions.
       </p>
 
@@ -95,14 +159,21 @@ ${resume || "Not provided — give general advice."}`;
 
       <button
         onClick={analyze}
-        disabled={loading || !jd.trim()}
+        disabled={loading || !jd.trim() || cooldown > 0}
         className="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm
-          hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {loading ? "Analyzing..." : "Analyze with Gemini"}
+        {loading ? "Analyzing..." : cooldown > 0 ? `Wait ${cooldown}s` : "Analyze with Gemini"}
       </button>
 
       {error && <p className="mt-4 text-red-500 text-sm">{error}</p>}
+
+      {!result && !error && (
+        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg text-xs text-blue-800 dark:text-blue-300">
+          <p className="font-medium mb-1">📌 Rate Limit Info</p>
+          <p>Google's free API allows 60 requests/minute. If you hit the limit, the app will automatically retry. For unlimited usage, consider upgrading to a paid plan.</p>
+        </div>
+      )}
 
       {result && (
         <div

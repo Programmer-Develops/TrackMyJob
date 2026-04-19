@@ -10,7 +10,6 @@ export default function Jobs() {
     filter, setFilter,
     search, setSearch,
     sortBy, setSortBy,
-    darkMode,
     stats,
   } = useJobs();
 
@@ -19,21 +18,13 @@ export default function Jobs() {
     [setSearch]
   );
 
-  const inputCls = darkMode
-    ? "bg-gray-800 border-gray-700 text-white placeholder-gray-500"
-    : "bg-white border-gray-200 text-gray-900 placeholder-gray-400";
-
-  const selectCls = darkMode
-    ? "bg-gray-800 border-gray-700 text-white"
-    : "bg-white border-gray-200 text-gray-700";
-
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className={`text-2xl font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}>
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
           Applications
         </h1>
-        <span className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
+        <span className="text-sm text-gray-500 dark:text-gray-400">
           {filteredJobs.length} of {stats.total}
         </span>
       </div>
@@ -44,14 +35,17 @@ export default function Jobs() {
           placeholder="Search company or role..."
           value={search}
           onChange={handleSearch}
-          className={`flex-1 border rounded-xl px-4 py-2 text-sm focus:outline-none
-            focus:ring-2 focus:ring-blue-400 ${inputCls}`}
+          className="flex-1 border rounded-xl px-4 py-2 text-sm focus:outline-none
+            focus:ring-2 focus:ring-blue-400 bg-white dark:bg-gray-800 border-gray-200 
+            dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 
+            dark:placeholder-gray-500"
         />
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className={`border rounded-xl px-3 py-2 text-sm focus:outline-none
-            focus:ring-2 focus:ring-blue-400 ${selectCls}`}
+          className="border rounded-xl px-3 py-2 text-sm focus:outline-none
+            focus:ring-2 focus:ring-blue-400 bg-white dark:bg-gray-800 border-gray-200 
+            dark:border-gray-700 text-gray-700 dark:text-white"
         >
           {STATUSES.map((s) => (
             <option key={s}>{s}</option>
@@ -60,8 +54,9 @@ export default function Jobs() {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className={`border rounded-xl px-3 py-2 text-sm focus:outline-none
-            focus:ring-2 focus:ring-blue-400 ${selectCls}`}
+          className="border rounded-xl px-3 py-2 text-sm focus:outline-none
+            focus:ring-2 focus:ring-blue-400 bg-white dark:bg-gray-800 border-gray-200 
+            dark:border-gray-700 text-gray-700 dark:text-white"
         >
           <option value="date">Sort: newest first</option>
           <option value="company">Sort: company A–Z</option>
@@ -76,9 +71,7 @@ export default function Jobs() {
             className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
               filter === s
                 ? "bg-blue-600 text-white border-blue-600"
-                : darkMode
-                ? "border-gray-700 text-gray-400 hover:border-gray-500"
-                : "border-gray-200 text-gray-500 hover:border-gray-400"
+                : "border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500"
             }`}
           >
             {s}
@@ -95,7 +88,7 @@ export default function Jobs() {
       </div>
 
       {filteredJobs.length === 0 ? (
-        <div className={`text-center py-20 ${darkMode ? "text-gray-500" : "text-gray-400"}`}>
+        <div className="text-center py-20 text-gray-500 dark:text-gray-400">
           <p className="text-4xl mb-3">📭</p>
           <p className="text-sm">No applications found</p>
           <p className="text-xs mt-1">Try a different filter or add a new job</p>
