@@ -168,13 +168,6 @@ ${resume || "Not provided — give general advice."}`;
 
       {error && <p className="mt-4 text-red-500 text-sm">{error}</p>}
 
-      {!result && !error && (
-        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg text-xs text-blue-800 dark:text-blue-300">
-          <p className="font-medium mb-1">📌 Rate Limit Info</p>
-          <p>Google's free API allows 60 requests/minute. If you hit the limit, the app will automatically retry. For unlimited usage, consider upgrading to a paid plan.</p>
-        </div>
-      )}
-
       {result && (
         <div
           className="mt-6 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm space-y-4 border
