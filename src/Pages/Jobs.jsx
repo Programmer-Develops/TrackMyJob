@@ -1,5 +1,5 @@
-import { useJobs } from "../context/JobContext";
-import JobCard from "../components/JobCard";
+import { useJobs } from "../Context/JobContext";
+import JobCard from "../Components/JobCard";
 import { useCallback } from "react";
 
 const STATUSES = ["All", "Applied", "Interview", "Offer", "Rejected"];

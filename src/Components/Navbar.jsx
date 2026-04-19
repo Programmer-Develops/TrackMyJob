@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useJobs } from "../context/JobContext";
+import { useJobs } from "../Context/JobContext";
 
 const links = [
   { to: "/", label: "Dashboard" },

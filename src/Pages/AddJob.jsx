@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useJobs } from "../context/JobContext";
+import { useJobs } from "../Context/JobContext";
 import { useNavigate } from "react-router-dom";
 
 const STEPS = ["Job details", "Notes & links"];

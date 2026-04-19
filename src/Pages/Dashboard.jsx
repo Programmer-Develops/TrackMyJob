@@ -1,4 +1,4 @@
-import { useJobs } from "../context/JobContext";
+import { useJobs } from "../Context/JobContext";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 const COLORS = ["#378ADD", "#639922", "#BA7517", "#E24B4A"];

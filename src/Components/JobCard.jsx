@@ -1,4 +1,4 @@
-import { useJobs } from "../context/JobContext";
+import { useJobs } from "../Context/JobContext";
 import StatusBadge from "./StatusBadge";
 
 const STATUSES = ["Applied", "Interview", "Offer", "Rejected"];

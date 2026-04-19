@@ -1,6 +1,7 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const JobContext = createContext();
+export const useJobs = () => useContext(JobContext);
 
 export const JobProvider = ({ children }) => {
   const [jobs, setJobs] = useState(() => {
