@@ -27,7 +27,7 @@ export default function AIAnalyzer() {
   };
 
   const analyzeWithRetry = async (retryCount = 0, maxRetries = 2) => {
-    const API_KEY = "AIzaSyDQpHjBmIXexphVuQIlX-gCIiODUVMdB14";
+    const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
     
     if (!API_KEY || API_KEY === "undefined") {
       setError("🔑 API key not configured. Please add VITE_GEMINI_API_KEY to your .env file and restart the dev server.");
