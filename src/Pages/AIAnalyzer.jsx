@@ -123,7 +123,7 @@ ${resume || "Not provided — give general advice."}`;
     <div>
       <h1 className="text-2xl font-semibold mb-1 text-gray-900 dark:text-white">AI job analyzer</h1>
       <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
-        Paste a job description to get a fit score and suggestions.
+        Paste your job description to get a fit score and suggestions.
       </p>
 
       <div className="grid md:grid-cols-2 gap-4 mb-4">
